@@ -13,12 +13,20 @@ let currentValue ='';
 let previousValue = '';
 let currentOperatorValue =null;
 
+let shouldResetDisplay = false;
 
+
+    
 
 numberBtns.forEach((button)=>{
   button.addEventListener('click', () => {
     const btnValue =button.innerText;
-    
+    if (shouldResetDisplay) {
+      currentOperand.innerText=btnValue
+      shouldResetDisplay=false
+      return
+    }
+
   if (btnValue=== '.') {
     if(!currentOperand.innerText.includes('.')){
       currentOperand.innerText+='.';
@@ -28,6 +36,8 @@ numberBtns.forEach((button)=>{
   
   if (currentOperand.innerText ==='0') {
     currentOperand.innerText = btnValue;
+
+
   } else{
     currentOperand.innerText += btnValue
   }
@@ -36,6 +46,9 @@ numberBtns.forEach((button)=>{
 
 operatorBtns.forEach((button) => {
   button.addEventListener('click', () => {
+if(currentOperand.innerText ===''){
+  return
+}
   previousOperand.innerText = currentOperand.innerText
   previousValue = previousOperand.innerText
   
@@ -47,9 +60,15 @@ operatorBtns.forEach((button) => {
 })
 
 equalsBtn.addEventListener('click', ()=> {
-  if (!previousValue || !currentOperatorValue) return;
   
   currentValue = currentOperand.innerText
+  
+  if (previousValue === ''||  currentOperatorValue === ''||  currentValue=== ''){ 
+   return
+    
+  } ;
+  
+  
   let firstNumber = parseFloat(previousValue);
   let secondNumber = parseFloat(currentValue)
   let result;
@@ -71,9 +90,37 @@ equalsBtn.addEventListener('click', ()=> {
       break;
   }
   
+  if(isNaN(result)){
+    currentOperand.innerText='0'
+  }
+ shouldResetDisplay =true;
   currentOperand.innerText = result;
+  
+  
   previousOperand.innerText = '';
   currentOperator.innerText = '';
   currentOperatorValue = null;
   previousValue = '';
+
 })
+
+
+controlBtns.forEach((button) => {
+   button.addEventListener('click', () => {
+
+     if(button.dataset.action ==='clear'){
+       currentOperand.innerText ='0';
+       previousOperand.innerText='';
+       currentOperator.innerText='';
+       currentValue='';
+       previousValue =''
+       currentOperandValue ='';
+     } else if (button.dataset.action=== 'delete') {
+    
+         currentOperand.innerText = currentOperand.innerText.slice(0, -1) || '0';
+      
+     }
+   })
+})
+
+
