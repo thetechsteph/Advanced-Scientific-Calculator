@@ -101,9 +101,11 @@ if(currentOperand.textContent=== ''){
   currentOperator.innerText= button.innerText
   currentOperand.innerText =''
   currentOperatorValue = currentOperator.innerText
-  updateLivePreview()
+  
 }
+
   })
+  updateLivePreview()
 })
 
 
@@ -162,6 +164,7 @@ controlBtns.forEach((button) => {
        currentValue='';
        previousValue =''
        currentOperatorValue =null;
+       updateLivePreview()
      } else if (button.dataset.action=== 'delete') {
          if  (currentOperand.innerText!==''){
            currentOperand.innerText = currentOperand.innerText.slice(0, -1);
@@ -179,6 +182,7 @@ controlBtns.forEach((button) => {
          
          
      }
+     updateLivePreview()
    })
 })
 
