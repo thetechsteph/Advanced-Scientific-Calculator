@@ -61,7 +61,9 @@ numberBtns.forEach(button => {
     
     if (buttonValue === '.' && (!lastItem || isNaN(lastItem))) {
       expression.push('0.');
+      currentValue= '0.'
       updateLivePreview()
+      
       previousOperand.innerText = expression.join(' ');
       return;
     }
@@ -75,7 +77,10 @@ numberBtns.forEach(button => {
     }else {
       expression.push(buttonValue);
     }
+    
+    currentValue = expression[expression.length - 1];
     updateLivePreview()
+    
     previousOperand.innerText = expression.join(' ');
   })
 })
@@ -91,6 +96,7 @@ operatorBtns.forEach(button => {
     } else{
       expression.push(operator);
     }
+    currentValue = '';
     updateLivePreview()
   previousOperand.innerText = expression.join(' ');
   })
@@ -137,3 +143,37 @@ equalsBtn.addEventListener('click', () => {
   expression =[String(result)];
   
 });
+
+controlBtns.forEach(button => {
+  button.addEventListener('click', () => {
+    let action = button.dataset.action;
+    if(action ==='clear'){
+      expression = []
+currentValue = ''
+previousOperand.innerText = ''
+currentOperand.innerText = ''
+resultDisplay.innerText = ''
+    } 
+    if (action === 'delete') {
+
+  if (currentValue !== '') {
+    currentValue = currentValue.slice(0, -1);
+    currentOperand.innerText = currentValue;
+
+  
+    expression[expression.length - 1] = currentValue;
+
+
+    if (currentValue === '') {
+      expression.pop();
+    }
+  } 
+  else if (expression.length > 0) {
+    expression.pop();
+  }
+
+  previousOperand.innerText = expression.join(' ');
+updateLivePreview()
+}
+  })
+})
