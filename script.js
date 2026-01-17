@@ -8,176 +8,132 @@ const buttons = document.querySelectorAll('.btn');
 const controlBtns = document.querySelectorAll('.control');
 const operatorBtns = document.querySelectorAll('.operator');
 const numberBtns = document.querySelectorAll('.number');
-const equalsBtn = document.querySelector('.equals')
+const equalsBtn = document.querySelector('.equals');
 
-let currentValue ='';
-let previousValue = '';
-let currentOperatorValue =null;
+let expression =[];
+let currentValue = '';
 
-let shouldResetDisplay = false;
-
-let numbers = [];
-let operators =[];
-    
-
-const updateLivePreview = ()=> {
-  if (currentValue===''|| previousValue === ''|| currentOperatorValue===null){
-    resultDisplay.innerText ='';
-    return;
-  }
-  let result;
+const updateLivePreview = () => {
   
-  const prev=
-  parseFloat(previousValue);
-  const curr = parseFloat(currentValue);
-  
-  switch(currentOperatorValue){
-    case '+':
-      result = prev + curr;
-      break;
-    case '-':
-      result = prev - curr;
-      break;
-    case '÷':
-      result = curr === 0? 'Error': prev/curr;
-      break;
-    case '×':
-      result = prev * curr;
-      break;
-    case'%':
-      result = prev% curr;
-      break;
-    default:
-    return;
-  }
-  resultDisplay.innerText = result
-}
-
-
-  
-
-numberBtns.forEach((button)=>{
-  button.addEventListener('click', () => {
-    const btnValue =button.innerText;
-    currentOperand.innerText = btnValue
-    if (shouldResetDisplay) {
-      currentOperand.innerText=btnValue
-      shouldResetDisplay=false
-      updateLivePreview()
-      return
-    }
-
-  if (btnValue=== '.') {
-    if(!currentOperand.innerText.includes('.')){
-      currentOperand.innerText+='.';
-    }
+  if(expression.length === 0 || expression.length===1){
+    resultDisplay.innerText = '';
     return
   }
+  const lastItem = expression[expression.length - 1]
+  if(isNaN(lastItem) ){
+    resultDisplay.innerText =''
+    return 
+  }
+  let result = expression.reduce((acc, item, index) => {
+    if(index === 0) return Number(item);
+    
+    const operator = expression[index - 1];
+    
+    const number = Number(item);
+    
+    if (operator === '+') {
+      return acc + number;
+    }
+    if (operator === '-') {
+      return acc - number;
+    }
+    if (operator === '÷') {
+  return acc / number;
+   }
+  if (operator === '×') {
+    return acc * number;
+  }
+  if(operator === '%'){
+    return acc % number;
+  }
   
-  currentValue = currentOperand.innerText;
-  updateLivePreview()
-})
-})
-
-operatorBtns.forEach((button) => {
-  button.addEventListener('click', () => {
-if(currentOperand.textContent=== ''){
-  
-  currentOperator.innerText= button.innerText
-  currentOperand.innerText =''
-  currentOperatorValue = currentOperator.innerText
-  return
-} else{
-  
-  previousOperand.innerText = currentOperand.innerText
-  previousValue = previousOperand.innerText
-  
-  currentOperator.innerText= button.innerText
-  currentOperand.innerText =''
-  currentOperatorValue = currentOperator.innerText
-  
+  return acc
+  });
+  resultDisplay.innerText = result;
 }
 
-  })
-  updateLivePreview()
-})
 
 
-equalsBtn.addEventListener('click', ()=> {
-  
-  currentValue = currentOperand.innerText
-  
-  if (previousValue === ''||  currentOperatorValue === ''||  currentValue=== ''){ 
-   return
+numberBtns.forEach(button => {
+  button.addEventListener('click', ()=> {
+    const buttonValue = button.innerText;
+    const lastItem = expression[expression.length -1];
     
-  } ;
-  
-  
-  let firstNumber = parseFloat(previousValue);
-  let secondNumber = parseFloat(currentValue)
-  let result;
-  switch(currentOperatorValue){
-    case '+':
-      result = firstNumber + secondNumber;
-      break;
-    case '-':
-      result = firstNumber - secondNumber;
-      break;
-    case '×':
-      result = firstNumber * secondNumber;
-      break;
-    case '÷':
-      result = secondNumber === 0 ? 'Error': firstNumber/secondNumber;
-      break;
-    case '%':
-      result = firstNumber % secondNumber;
-      break;
-  }
-  
-  if(isNaN(result)){
-    currentOperand.innerText='0'
-  }
- shouldResetDisplay =true;
-  currentOperand.innerText = result;
-  
-  previousOperand.innerText = '';
-  currentOperator.innerText = '';
-  currentOperatorValue = null;
-  previousValue = '';
+    if (buttonValue === '.' && (!lastItem || isNaN(lastItem))) {
+      expression.push('0.');
+      updateLivePreview()
+      previousOperand.innerText = expression.join(' ');
+      return;
+    }
+    
+    if (buttonValue === '.' && lastItem && lastItem.includes('.')) {
+      return;
+    }
+    
+    if (lastItem && !isNaN(lastItem)) {
+      expression[expression.length - 1] = lastItem + buttonValue
+    }else {
+      expression.push(buttonValue);
+    }
+    updateLivePreview()
+    previousOperand.innerText = expression.join(' ');
+  })
+})
 
+operatorBtns.forEach(button => {
+  button.addEventListener('click', () => {
+    const operator = button.innerText;
+    const lastItem = expression[expression.length -1]
+    if(!expression.length) return;
+    
+    if(lastItem && isNaN(lastItem)){
+      expression [expression.length -1] = operator;
+    } else{
+      expression.push(operator);
+    }
+    updateLivePreview()
+  previousOperand.innerText = expression.join(' ');
+  })
 })
 
 
-controlBtns.forEach((button) => {
-   button.addEventListener('click', () => {
-
-     if(button.dataset.action ==='clear'){
-       currentOperand.innerText ='0';
-       previousOperand.innerText='';
-       currentOperator.innerText='';
-       currentValue='';
-       previousValue =''
-       currentOperatorValue =null;
-       updateLivePreview()
-     } else if (button.dataset.action=== 'delete') {
-         if  (currentOperand.innerText!==''){
-          currentValue= currentOperand.innerText = currentOperand.innerText.slice(0, -1);
-           
-         } else if(currentOperator.innerText !==''){
-           currentOperator.innerText = '';
-           currentOperatorValue = null
-      
-           } else if (previousOperand !=='') {
-         previousValue =  previousOperand.innerText = previousOperand.innerText.slice(0, -1);
-         }
-         else{
-           return
-         }
-         
-         
-     }
-     updateLivePreview()
-   })
-})
-
-
+equalsBtn.addEventListener('click', () => {
+  
+  if (expression.length === 0) return;
+  
+  const lastItem = expression[expression.length -1]
+ if(isNaN(lastItem))return;
+  
+  let result = expression.reduce((acc, item, index) => {
+    if(index === 0) return Number(item);
+    
+    const operator = expression[index - 1];
+    
+    const number = Number(item);
+    
+    if (operator === '+') {
+      return acc + number;
+    }
+    if (operator === '-') {
+      return acc - number;
+    }
+    if (operator === '÷') {
+  return acc / number;
+   }
+  if (operator === '×') {
+    return acc * number;
+  }
+  if(operator === '%'){
+    return acc % number;
+  }
+  
+  return acc
+  });
+  
+  previousOperand.innerText = result;
+  currentOperand.innerText =''
+  resultDisplay.innerText = ''
+  
+  expression =[String(result)];
+  
+});
