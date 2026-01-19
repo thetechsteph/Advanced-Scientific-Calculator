@@ -1,27 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-:root {
+
+
+:root[data-theme="light"]{
   --bg: #F0F0F3;
   --shadow-light: #ffffff;
   --shadow-dark: #c7c7c7;
   --accent: #6231FF;
   --text: #222;
+  --result-display:#2a2a2a;
+
 }
 
-body.light-theme {
-  --bg: #F0F0F3;
-  --shadow-light: #ffffff;
-  --shadow-dark: #c7c7c7;
-  --accent: #6231FF;
-  --text: #222;
-}
-
-body.dark-theme {
+:root[data-theme = "dark"]{
   --bg: #181818;
   --shadow-light: #2a2a2a;
   --shadow-dark: #0f0f0f;
   --accent: #FFB11B;
   --text: #eee;
+  --result-display: #c7c7c7;
 }
 
 * {
@@ -36,15 +33,14 @@ body {
   align-items: center;
   min-height: 100vh;
   background: var(--bg);
+  flex-direction: column;
 }
+
 
 .theme-switch {
   position: absolute;
-  top: 20px;
-  right: 20px;
-}
-
-.theme-switch button {
+top: 20px;
+right: 20px;
   padding: 8px 12px;
   border: none;
   border-radius: 10px;
@@ -61,6 +57,8 @@ body {
 }
 
 .calculator {
+  position: relative;
+  top:2.3rem;
   width: 360px;
   padding: 25px;
   border-radius: 30px;
@@ -101,6 +99,7 @@ body {
   height: 40px;
   margin-bottom: 15px;
   padding: 0.5rem;
+  color: var(--result-display);
   border-radius: 12px;
   background: var(--bg);
   box-shadow: inset 6px 6px 12px var(--shadow-dark),
