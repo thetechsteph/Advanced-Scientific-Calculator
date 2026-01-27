@@ -41,19 +41,6 @@ const toggleBtn = document.querySelector('.theme-switch');
   
 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');  
   
-/*
-
-if (prefersDarkScheme.matches) {  
-  html.setAttribute('data-theme', 'dark');  
-  toggleBtn.innerHTML = moonSVG;  
-} else {  
-  html.setAttribute('data-theme', 'light');  
-  toggleBtn.innerHTML = sunSVG;  
-} 
-  
-*/ 
-
-
 // Functional Refactor: 
 const applyTheme = (isDark) => {  
   html.setAttribute('data-theme', isDark ? 'dark' : 'light');
@@ -67,25 +54,14 @@ toggleBtn.addEventListener("click", () => {
   const currentTheme = html.getAttribute("data-theme"); 
 
   const isDark = currentTheme === "dark"; 
-   applyTheme(!isDark);
-  // if (currentTheme === "dark") {  
-  //   html.setAttribute("data-theme", "light");  
-  //   toggleBtn.innerHTML = sunSVG;  
-  // } else {  
-  //   html.setAttribute("data-theme", "dark");  
-  //   toggleBtn.innerHTML = moonSVG;  
-  //}  
+   applyTheme(!isDark); 
 });  
   
   
   
 // Calculator Logic  
 let expression =[];  
-let currentValue = '';  
-  
-  
-  
-  
+let currentValue = '';    
 const precedence = {  
   '+': 1,  
   '-': 1,  
@@ -93,37 +69,6 @@ const precedence = {
   '÷': 2, 
 };  
   
-  
-// function toPostFix(expr) {  
-//   let output = [];  
-//   let stack = [];  
-  
-//   for (let token of expr) {  
-  
-//     if (!isNaN(token)) {  
-//       output.push(token);  
-//     }  
-  
-//     else {  
-//       while (  
-//         stack.length &&  
-//         precedence[stack[stack.length - 1]] >= precedence[token]  
-//       ) {  
-
-//         output.push(stack.pop());  
-//       }  
-//       stack.push(token);  
-//     }  
-//   }  
-  
-//   while (stack.length) {  
-//     output.push(stack.pop());  
-//   }  
-  
-//   return output;  
-
-// }  
-
 const postFix = (expr, precedence) => {
   const { output, operatorStack } = expr.reduce(
     ({ output, operatorStack }, token) => {
@@ -156,29 +101,6 @@ const postFix = (expr, precedence) => {
 }
 
 const isNumeric = token => typeof token === 'string'  && /^-?\d+(\.\d+)?$/.test(token);
-  
-// function evaluatePostfix(postfix) {  
-//   let stack = [];  
-  
-//   for (let token of postfix) {  
-  
-//     if (!isNaN(token)) {  
-//       stack.push(Number(token));  
-//     }  
-  
-//     else {  
-//       let b = stack.pop();  
-//       let a = stack.pop();  
-  
-//       if (token === '+') stack.push(a + b);  
-//       if (token === '-') stack.push(a - b);  
-//       if (token === '×') stack.push(a * b);  
-//       if (token === '÷') stack.push(a / b); 
-//     }  
-//   }  
-  
-//   return stack[0];  
-// }  
 
 const evaluatePostfix = (postfix) => 
    postfix.reduce((stack, token) => {
@@ -215,18 +137,6 @@ const clearScreen = () => {
 
 
 const updateLivePreview = () => {  
-  // if (expression.length === 0 || expression.length===1) {  
-  //   resultDisplay.innerText = '';  
-  //   return;  
-  // }  
-  
-  // const lastItem = expression[expression.length - 1];  
-  
-  
-  // if (isNaN(lastItem)) {  
-  //   resultDisplay.innerText = '';  
-  //   return;  
-  // }  
 
   if(!isPreviewValid(expression)) {
     clearScreen();
@@ -237,12 +147,7 @@ const updateLivePreview = () => {
   const result = evaluatePostfix(postfix);  
    
   // handled floating point precision issues
-  resultDisplay.innerText = Number(result.toFixed(10));  
-  
-  // // const postfix = toPostFix(expression);  
-  // const postfix = postFix(expression, precedence);
-  // const result = evaluatePostfix(postfix);  
-  // resultDisplay.innerText = result;  
+  resultDisplay.innerText = Number(result.toFixed(10));   
 }  
 
 const lastItem = (arr) => arr.at(-1);
@@ -279,50 +184,16 @@ const appendDecimalPoint = (expr) => {
   return [...expr.slice(0, -1), prev + '.'];
 }
 
-
-
 numberBtns.forEach(button => {
   button.addEventListener('click', () => {
     const buttonValue = button.innerText;
-    // const lastItem = expression[expression.length - 1];
 
-    //  const secondLastItem = expression[expression.length - 2];
-
-    // // If last item is '-' AND there's a number before it, it's subtraction
-    // if (lastItem === '-' && secondLastItem && !isNaN(secondLastItem)) {
-    //   // Start a new number
-    //   expression.push(buttonValue);
-    // } 
-    // // If last item is '-' with no number before it, it's a negative sign
-    // else if (lastItem === '-') {
-    //   expression[expression.length - 1] = '-' + buttonValue;
-    // } 
-    // // Continuing an existing number
-    // else if (lastItem && !isNaN(lastItem)) {
-    //   expression[expression.length - 1] = lastItem + buttonValue;
-    // } 
-    // // Starting a new number
-    // else {
-    //   expression.push(buttonValue);
-    // }
-
-  
-    // if (buttonValue === '.' && (!lastItem || isNaN(lastItem))) {
-    //   expression[expression.length - 1] = '0.'; 
-    // }
-
-    // if (buttonValue === '.' && lastItem && lastItem.includes('.')) {
-    //   return;
-    // }
-
-    // currentValue = expression[expression.length - 1];
     expression = buttonValue === '.' ? appendDecimalPoint(expression) : appendDigit(expression, buttonValue);
     currentValue = lastItem(expression);
     previousOperand.innerText = expression.join(' ');
     updateLivePreview();
   });
 });
-
 
 const appendOperator = (expr, operator) => {
   const lastItem = expr.at(-1);
@@ -363,113 +234,29 @@ operatorBtns.forEach(button => {
     updateLivePreview();
   });
 });
-
-// operatorBtns.forEach(button => {  
-//   button.addEventListener('click', () => {  
-//     const operator = button.innerText;  
-//     const lastItem = expression[expression.length -1]  
-
-//     if (operator === '-' && (!lastItem || isNaN(lastItem))) {
-//       if (lastItem === '-') return;  
-//       expression.push('-');
-//       previousOperand.innerText = expression.join(' ');
-//       return;
-//     }
-
-//     if (operator === '%') {
-//       if (!lastItem || isNaN(lastItem)) return;
-//        expression[expression.length - 1] = String(Number(lastItem) / 100);
- 
-//  updateLivePreview();
-//  previousOperand.innerText = expression.join(' ');
-//  return;
-//     }
-//     if(!expression.length && operator !== '%') return;;  
-      
-//     if(lastItem && isNaN(lastItem)){  
-//       expression [expression.length -1] = operator;  
-//     } else{  
-//       expression.push(operator);  
-//     }  
-//     currentValue = '';  
-//     updateLivePreview()  
-//   previousOperand.innerText = expression.join(' ');  
-//   })  
-// })  
   
 const computeResult = (expr) => {
-  if (expr.length === 0) return expr;                  // empty expression
+  if (expr.length === 0) return expr;   // empty expression
   const lastItem = expr.at(-1);
-  if (!isNumeric(lastItem)) return expr;              // last item must be a number
+  if (!isNumeric(lastItem)) return expr;  // last item must be a number
 
   const postfix = postFix(expr, precedence);
   const result = evaluatePostfix(postfix);
 
-  return [String(result)];                            // return new expression
+  return [String(result)];                // return new expression
 };
 
 equalsBtn.addEventListener('click', () => {
   const newExpression = computeResult(expression);
 
-  if (newExpression === expression) return;           // no computation happened
+  if (newExpression === expression) return;    // no computation happened
 
   expression = newExpression;
-
-  previousOperand.innerText = expression[0];         // show result
+  previousOperand.innerText = expression[0];    // show result
   currentOperand.innerText = '';
   resultDisplay.innerText = '';
 });
 
-  
-// equalsBtn.addEventListener('click', () => {  
-//   if (expression.length === 0) return;  
-  
-//   const lastItem = expression[expression.length - 1];  
-//   if (isNaN(lastItem)) return;  
-  
-//   // const postfix = toPostFix(expression);  
-//   const postfix = postFix(expression, precedence);
-//   const result = evaluatePostfix(postfix);  
-  
-//   previousOperand.innerText = result;  
-//   currentOperand.innerText = '';  
-//   resultDisplay.innerText = '';  
-//   expression = [String(result)];  
-// });  
-  
-// controlBtns.forEach(button => {  
-//   button.addEventListener('click', () => {  
-//     let action = button.dataset.action;  
-//     if(action ==='clear'){  
-//       expression = []  
-// currentValue = ''  
-// previousOperand.innerText = ''  
-// currentOperand.innerText = ''  
-// resultDisplay.innerText = ''  
-//     }   
-//     if (action === 'delete') {  
-  
-//   if (currentValue !== '') {  
-//     currentValue = currentValue.slice(0, -1);  
-//     currentOperand.innerText = currentValue;  
-  
-    
-//     expression[expression.length - 1] = currentValue;  
-  
-  
-//     if (currentValue === '') {  
-//       expression.pop();  
-//     }  
-//   }   
-//   else if (expression.length > 0) {  
-//     expression.pop();  
-//   }  
-  
-//   previousOperand.innerText = expression.join(' ');  
-// updateLivePreview()  
-// }  
-//   })  
-// })
 // Pure functions for control actions
 const clearExpression = () => [];
 
